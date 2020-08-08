@@ -24,7 +24,7 @@ create table Postman(
 create table District(
 	Id_District int Auto_increment, Primary key(Id_District),
 	ZIP int(5),
-	Name Varchar,
+	Name Varchar(50),
 	Fk_Postman int,
 	foreign key(Fk_Postman) references Postman(Id_Postman)
 );
@@ -66,9 +66,7 @@ create table Outcommig_Mail(
 create table Deliver_Office(
 	Id_Delivery_Office int Auto_increment, Primary key(Id_Delivery_Office),
 	Address Varchar(50),
-	Tel_Number Int(20),
-	Fk_District int,
-	foreign key(Fk_District) references District(Id_District)
+	Tel_Number Int(20)
 );
 
 
@@ -103,7 +101,7 @@ create table District_List(
 );
 
 create table Post_Center(
-Id_Post_Center int Auto_increment, Primary key(Id_PostCenter),
+Id_Post_Center int Auto_increment, Primary key(Id_Post_Center),
 Address Varchar (50),
 Tel_Number int (20),
 Country Varchar(30)
@@ -115,6 +113,7 @@ create table Post_Center_Delivery(
 	Fk_Post_Office int,
 	Fk_Delivery_Office int,
 	Fk_Letter int,
+	foreign key(Fk_Post_Center) references Post_Center(Id_Post_Center),
 	foreign key(Fk_Post_Office) references Post_Office(Id_Post_Office),
 	foreign key(Fk_Delivery_Office) references Deliver_Office(Id_Delivery_Office),
 	foreign key(Fk_Letter) references Letter_Package(Id_Letter_Package)
@@ -175,7 +174,7 @@ insert into Outcommig_Mail(Outcomming_Date, Fk_Letter)
 	(2020-08-06,2),
 	(2020-08-07,3);
 
-insert into Deliver_Office( Address, Tel_Number, Fk_Outcomming_Mail, Fk_District)
+insert into Deliver_Office( Address, Tel_Number)
 	values
 	("Backstein 34", 0664001245),
 	("Backhausen 2", 0676852147);
@@ -187,7 +186,7 @@ insert into To_Deliver(Fk_Outcomming_Mail, Fk_Delivery_Office)
 	(3,2);
 
 
-insert into To_Deliver(Fk_Delivery_Office , Fk_District)
+insert into District_List(Fk_Delivery_Office , Fk_District)
 	values
 	(1, 3),
 	(2, 2),
@@ -207,7 +206,25 @@ insert into Post_Center(Address, Tel_Number, Country)
 	("Hauptstraße 1", 06644448254, "Niederösterreich");
 
 
-insert into Post_Center_Delivery(Fk_Post_Center Fk_Post_Office, Fk_Delivery_Office, Fk_Letter )
-	(1, 1, 2, 1);
-	(1, 2, 1, 2);
+insert into Post_Center_Delivery(Fk_Post_Center, Fk_Post_Office, Fk_Delivery_Office, Fk_Letter )
+	values
+	(1, 1, 2, 1),
+	(1, 2, 1, 2),
 	(1, 3, 1, 3);
+
+
+
+
+
+
+
+
+
+select Mailbox.Address, Post_Partner.Name, Post_Office.Address, Post_Center_Delivery.Id_Post_Center_Delivery
+from Post_Center_Delivery
+inner join Post_Office
+on Post_Center_Delivery.Fk_Post_Office = Post_Office.Id_Post_Office
+right join Post_Partner
+on Post_Office.Fk_Post_Partner = Post_Partner.Id_Post_Partner
+right join Mailbox
+on Post_Office.Fk_Mailbox = Mailbox.Id_Mailbox
